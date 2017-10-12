@@ -1,0 +1,139 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<!--
+`media-svg`
+A LRN element
+
+@demo demo/index.html
+-->
+
+<dom-module id="media-svg">
+  <template>
+    <style>
+      :host {
+        display: block;
+        font-family: "Roboto", sans-serif;
+      }
+
+      :host[align="left"] {
+        float: left;
+      }
+
+      :host[align="center"] {
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      :host[align="right"] {
+        float: right;
+      }
+
+      ::shadow svg {
+        width: 100%;
+      }
+
+      @media screen and (min-width: 450px) {
+        :host[size="small"] {
+          max-width: 50%;
+        }
+      }
+
+      @media screen and (min-width: 650px) {
+        :host[size="small"] {
+          max-width: 35%;
+        }
+      }
+
+      @media screen and (min-width: 900px) {
+        :host[size="small"] {
+          max-width: 25%;
+        }
+      }
+
+      .citation {
+        font-size: .8rem;
+        font-style: italic;
+        color: #4c4c4c;
+        margin: 15px 0 15px;
+      }
+
+      .caption {
+        padding-bottom: 25px;
+        border-bottom: dashed 2px lightgray;
+        margin-bottom: 25px;
+        line-height: 1.5;
+        font-size: 18px;
+      }
+
+      .alttext {
+        clip-path: polygon(0px 0px, 0px 0px, 0px 0px, 0px 0px);
+        position: absolute !important;
+      }
+    </style>
+
+    <div id="svg-container">
+      <slot name="svg"></slot>
+      <div class="citation">[[citation]]</div>
+      <div class="caption">
+        <slot name="caption"></slot>
+      </div>
+      <div class="alttext">
+        <template is="dom-if" if="[[hasAlt]]">
+          <div class="message">The following media is highly interactive in nature and may not be immediately accessible to you. If you would
+            like a more accessible version of this media please access the next link.</div>
+        </template>
+        <slot name="alttext" id="altslot"></slot>
+      </div>
+    </div>
+
+  </template>
+
+  <script>
+    Polymer({
+
+      is: 'media-svg',
+
+      properties: {
+        /**
+         * The svg citation.
+        */
+        citation: {
+          type: String,
+        },
+        /**
+         * Align svg (left, center, right).
+        */
+        align: {
+          type: String,
+          value: 'left',
+          reflectToAttribute: true,
+        },
+        /**
+         * The size of the svg (small, wide).
+        */
+        size: {
+          type: String,
+          value: 'wide',
+          reflectToAttribute: true,
+        },
+        /**
+          * The svg contains alt-text.
+        */
+        hasAlt: {
+          type: Boolean,
+          value: false,
+        },
+      },
+
+      ready: function () {
+        this._observer =
+          Polymer.dom(this.$.altslot).observeNodes((info) => {
+            if (info.addedNodes.length > 0) {
+              this.hasAlt = true;
+            }
+          });
+      }
+
+    });
+  </script>
+</dom-module>
